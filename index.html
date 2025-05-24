@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Animal Rescue Times Tables</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
+        #start-screen { margin-top: 100px; }
+        #game { display: none; }
+        #score, #progress, #hearts { font-size: 1.5em; margin: 10px; }
+        #question-container { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px; }
+        #question { font-size: 2em; }
+        #timer { font-size: 2em; }
+        #timer.warning { color: red; }
+        input[type="number"] { font-size: 1.5em; width: 80px; text-align: center; }
+        button { font-size: 1.2em; padding: 10px 20px; margin: 10px; }
+        #animals { position: relative; display: flex; flex-wrap: wrap; justify-content: center; margin: 20px; }
+        .cage {
+            display: inline-block;
+            font-size: 2em;
+            margin: 5px;
+            padding: 10px;
+            border: 2px solid brown;
+            border-radius: 8px;
+            width: 2em;
+            height: 2em;
+            line-height: 1.8em;
+            background: #fff8dc;
+        }
+        .unlock { animation: unlock 0.5s forwards; }
+        @keyframes unlock { to { transform: scale(0); opacity: 0; } }
+        .fly {
+            position: absolute;
+            font-size: 2em;
+            animation: fly 1.2s ease-in forwards;
+        }
+        @keyframes fly { to { transform: translate(var(--fly-x), -200px) rotate(720deg); opacity: 0; } }
+        .run {
+            position: absolute;
+            font-size: 2em;
+            animation: run-around 2s ease-in-out forwards;
+        }
+        @keyframes run-around {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(var(--run-x), var(--run-y)); }
+            100% { transform: translate(0, 0); }
+        }
+        #message { font-size: 1.5em; margin: 20px; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Animal Rescue Times Tables</h1>
+    <div id="start-screen">
+        <button id="start-btn">Start</button>
+        <p>Press Enter or click to begin</p>
+    </div>
+    <div id="game">
+        <div id="score">Score: <span id="score-val">0</span></div>
+        <div id="hearts">Hearts: <span id="hearts-val"></span></div>
+        <div id="progress">Progress: <span id="solved">0</span>/<span id="total">0</span></div>
+        <div id="animals"></div>
+        <div id="question-container">
+            <div id="question"></div>
+            <div id="timer">Time: <span id="time"></span>s</div>
+        </div>
+        <div>
+            <input type="number" id="answer" autocomplete="off" />
+            <button id="submit">Submit</button>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <audio id="unlock-sound" src="sounds/unlock.mp3"></audio>
+    <audio id="warning-sound" src="sounds/warning.mp3"></audio>
+    <audio id="applause-sound" src="sounds/applause.mp3"></audio>
+    <audio id="loss-sound" src="sounds/loss.mp3"></audio>
+    <script>
+        const maxTime = 150;
+        const maxHearts = 4;
+        let timeLeft = maxTime;
+        let hearts = maxHearts;
+        let score = 0;
+        let current = 0;
+        let timerInterval;
+        let warningPlayed = false;
+        const hurraySounds = ['sounds/hurray1.mp3', 'sounds/hurray2.mp3', 'sounds/hurray3.mp3'];
+
+        // Generate problems
+        let problems = [];
+        for (let i = 2; i <= 9; i++) for (let j = 2; j <= 9; j++) problems.push({ q: `${i} × ${j}`, a: i * j });
+        problems.sort(() => Math.random() - 0.5);
+        const total = problems.length;
+        document.getElementById('total').textContent = total;
+
+        // Animals
+        const animalIcons = ['🐥','🐸','🐼','🦊','🦁','🐵','🦄','🦉','🐧','🐨','🦔','🐯','🐮','🐬','🐙','🐶','🐱'];
+        const iconMap = [];
+        const animalsDiv = document.getElementById('animals');
+        problems.forEach((_, idx) => {
+            const icon = animalIcons[Math.floor(Math.random() * animalIcons.length)];
+            iconMap.push(icon);
+            const span = document.createElement('span');
+            span.classList.add('cage'); span.id = 'cage-' + idx; span.textContent = icon;
+            animalsDiv.appendChild(span);
+        });
+
+        function updateDisplays() {
+            document.getElementById('time').textContent = timeLeft;
+            document.getElementById('score-val').textContent = score;
+            document.getElementById('solved').textContent = current;
+            document.getElementById('hearts-val').textContent = '❤️'.repeat(hearts);
+        }
+
+        function showQuestion() {
+            if (current >= total) return finish();
+            document.getElementById('question').textContent = problems[current].q;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function lose() {
+            clearInterval(timerInterval);
+            document.getElementById('loss-sound').play();
+            document.getElementById('message').textContent = `Game Over! You lost all hearts. Final Score: ${score}`;
+            document.getElementById('submit').disabled = true;
+            document.getElementById('answer').disabled = true;
+        }
+
+        function finish() {
+            clearInterval(timerInterval);
+            let bonus = 0;
+            if (timeLeft > 0) {
+                bonus = 5000 + 50 * timeLeft;
+                score += bonus;
+                document.getElementById('message').textContent = `All animals freed! Bonus: ${bonus}! Final Score: ${score}`;
+                iconMap.forEach(icon => {
+                    const runEl = document.createElement('span'); runEl.classList.add('run'); runEl.textContent = icon;
+                    runEl.style.setProperty('--run-x', (Math.random() * 400 - 200) + 'px');
+                    runEl.style.setProperty('--run-y', (Math.random() * 200 - 100) + 'px');
+                    animalsDiv.appendChild(runEl);
+                });
+                setTimeout(() => document.querySelectorAll('.run').forEach(el => el.remove()), 3000);
+                hurraySounds.forEach(src => new Audio(src).play());
+                document.getElementById('applause-sound').play();
+            } else {
+                document.getElementById('message').textContent = `Time's up! Final Score: ${score}`;
+            }
+            document.getElementById('submit').disabled = true;
+            document.getElementById('answer').disabled = true;
+        }
+
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            updateDisplays(); showQuestion(); document.getElementById('answer').focus();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 15 && !warningPlayed) {
+                    document.getElementById('timer').classList.add('warning');
+                    document.getElementById('warning-sound').play(); warningPlayed = true;
+                }
+                updateDisplays();
+                if (timeLeft <= 0) finish();
+            }, 1000);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const startVisible = document.getElementById('start-screen').style.display !== 'none';
+                if (startVisible) startGame(); else document.getElementById('submit').click();
+            }
+        });
+
+        document.getElementById('submit').addEventListener('click', () => {
+            const userAns = parseInt(document.getElementById('answer').value);
+            if (isNaN(userAns)) return;
+            const cage = document.getElementById('cage-' + current);
+            const icon = iconMap[current];
+            if (userAns === problems[current].a) {
+                score += 10;
+                // document.getElementById('unlock-sound').play();
+                cage.classList.add('unlock');
+                const flyIcon = document.createElement('span');
+                flyIcon.textContent = icon; flyIcon.classList.add('fly');
+                const rect = cage.getBoundingClientRect(); flyIcon.style.left = rect.left + 'px'; flyIcon.style.top = rect.top + 'px';
+                flyIcon.style.setProperty('--fly-x', (Math.random() * 200 - 100) + 'px');
+                document.body.appendChild(flyIcon);
+                new Audio(hurraySounds[Math.floor(Math.random() * hurraySounds.length)]).play();
+            } else {
+                score -= 30;
+                hearts--;
+                document.getElementById('unlock-sound').play();
+                cage.classList.add('unlock');
+            }
+            current++;
+            updateDisplays();
+            if (hearts <= 0) return lose();
+            showQuestion();
+        });
+    </script>
+</body>
+</html>
+

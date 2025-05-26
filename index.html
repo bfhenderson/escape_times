@@ -81,7 +81,7 @@
           <option value="3">💎 Diamond (3s/q)</option>
           <option value="2">⚫ Obsidian (2s/q)</option>
           <option value="1.5">🗿 Moai (1.5s/q)</option>
-          <option value="1.25">🗿 Moai (1.5s/q)</option>
+          <option value="1.25">💀 Bone Head (1.25s/q)</option>
         </select>
       </div>
       <button id="start-btn">Start</button>
@@ -271,7 +271,7 @@
 
     function startGame() {
       generateProblems(); wrong = []; answerTimes = [];
-      const secPerQ = parseInt(document.getElementById('league-select').value);
+      const secPerQ = parseFloat(document.getElementById('league-select').value);
       timeLeft = problems.length * secPerQ; hearts = maxHearts(); score = 0; current = 0; warningPlayed = false; startTime = Date.now(); iconMap = [];
       document.getElementById('animals').innerHTML = '';
       problems.forEach((p, idx) => { const icon = ['🐥','🐸','🐼','🦊','🦁','🐵','🦄','🦉','🐧','🐨','🦔','🐯','🐮','🐬','🐙','🐶','🐱'][Math.floor(Math.random()*17)]; iconMap.push(icon);

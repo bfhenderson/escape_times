@@ -280,7 +280,18 @@
       });
       showScreen('game'); document.getElementById('celebration').style.display='none'; timerElem.classList.remove('warning'); updateDisplays(); showQuestion(); document.getElementById('submit').disabled=false; document.getElementById('answer').disabled=false;
       clearInterval(timerInterval);
-      timerInterval = setInterval(() => { timeLeft--; if(timeLeft<=15&&!warningPlayed){ timerElem.classList.add('warning'); document.getElementById('warning-sound').play(); warningPlayed=true;} updateDisplays(); if(timeLeft<=0) finish(); },1000);
+      timerInterval = setInterval(() => { 
+          timeLeft--; 
+          if(timeLeft<=15 && !warningPlayed) {
+              timerElem.classList.add('warning');
+              document.getElementById('warning-sound').play();
+              warningPlayed=true;
+          }
+          updateDisplays();
+          if(timeLeft<=0) {
+              lose();
+          }
+      },1000);
     }
 
     document.getElementById('start-btn').addEventListener('click', startGame);

@@ -6,7 +6,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
     body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #e3f2fd, #bbdefb); margin: 0; padding: 0; }
-    .container { background: #fff; max-width: 600px; margin: 40px auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
+    .container { background: #fff; max-width: 600px; margin: 40px auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; overflow-x: hidden; }
     h1 { margin-top: 0; font-weight: 600; color: #333; text-align: center; }
     .screen { display: none; }
     #start-screen { display: block; }
@@ -19,33 +19,31 @@
     button { background: #1976d2; color: #fff; transition: background 0.3s; }
     button:hover { background: #1565c0; }
     select { background: #e3f2fd; color: #333; }
-    input[type="number"] { width: 80px; border: 1px solid #ccc; }
+    input[type="number"] { width: 80px; border: 1px solid #ccc; border-radius: 6px; }
     #animals { position: relative; display: flex; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
-    <!-- 
-    .cage { font-size: 2em; margin: 5px; padding: 10px; border: 2px solid #8d6e63; border-radius: 8px; background: #ffecb3; width: 2.5em; height: 2.5em; line-height: 2.5em; }
-    -->
-            .cage {
-            display: inline-block;
-            font-size: 2em;
-            margin: 5px;
-            padding: 10px;
-            border: 2px solid brown;
-            border-radius: 8px;
-            width: 2em;
-            height: 2em;
-            line-height: 1.8em;
-            background: #fff8dc;
-        }
+    .cage {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 1.5em;
+      height: 1.5em;
+      margin: 2px;
+      padding: 0px;
+      font-size: 2.5em;
+      border: 2px solid #8d6e63;
+      border-radius: 8px;
+      background: #ffecb3;
+      text-align: center;
+    }
     .unlock { animation: unlock 0.5s forwards; }
     @keyframes unlock { to { transform: scale(0); opacity: 0; } }
-    .fly { position: absolute; font-size: 2em; animation: fly 1.2s ease-in forwards; }
+    .fly { position: absolute; font-size: 2.5em; animation: fly 1.2s ease-in forwards; }
     @keyframes fly { to { transform: translate(var(--fly-x), -200px) rotate(720deg); opacity: 0; } }
-    .run { position: absolute; font-size: 2em; animation: run-around 2s ease-in-out forwards; }
+    .run { position: absolute; font-size: 2.5em; animation: run-around 2s ease-in-out forwards; }
     @keyframes run-around { 0% { transform: translate(0, 0); } 50% { transform: translate(var(--run-x), var(--run-y)); } 100% { transform: translate(0, 0); } }
     #recommendations ul { list-style: none; padding: 0; }
     #recommendations li { margin: 4px 0; color: #444; }
     #celebration { font-size: 3em; margin: 10px 0; display: none; }
-
     /* Study table */
     #study-screen table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     #study-screen th, #study-screen td { border: 1px solid #ddd; padding: 8px; text-align: center; }
@@ -57,7 +55,6 @@
   <div class="container">
     <h1>Animal Rescue Times Tables</h1>
 
-    <!-- Start Screen -->
     <div id="start-screen" class="screen">
       <div>
         <label><input type="radio" name="mode" value="full" id="mode-full" checked> Full Game</label>
@@ -76,18 +73,21 @@
       <div>
         <label for="league-select">League:</label>
         <select id="league-select">
-          <option value="10">🪵 Wood (10s/q)</option>
-          <option value="8">🟫 Bronze (8s/q)</option>
-          <option value="6">⚪ Silver (6s/q)</option>
-          <option value="4">🟨 Gold (4s/q)</option>
-          <option value="2">💎 Diamond (2s/q)</option>
+          <option value="10">🪵 Log (10s/q)</option>
+          <option value="8">🪨 Rock(8s/q)</option>
+          <option value="6"> 🧱 Brick (6s/q)</option>
+          <option value="5"> ⚪ Silver (5s/q)</option>
+          <option value="4">🟡 Gold (4s/q)</option>
+          <option value="3">💎 Diamond (3s/q)</option>
+          <option value="2">⚫ Obsidian (2s/q)</option>
+          <option value="1.5">🗿 Moai (1.5s/q)</option>
+          <option value="1.25">🗿 Moai (1.5s/q)</option>
         </select>
       </div>
       <button id="start-btn">Start</button>
       <button id="study-btn">Study Tables</button>
     </div>
 
-    <!-- Study Screen -->
     <div id="study-screen" class="screen">
       <h2>Multiplication Facts 2×2 to 9×9</h2>
       <table>
@@ -104,7 +104,6 @@
       <button id="back-btn">Back</button>
     </div>
 
-    <!-- Game Screen -->
     <div id="game-screen" class="screen">
       <div id="score">Score: <span id="score-val">0</span></div>
       <div id="hearts">Hearts: <span id="hearts-val"></span></div>
@@ -122,7 +121,6 @@
       <div id="message"></div>
     </div>
 
-    <!-- End Screen -->
     <div id="end-screen" class="screen">
       <div id="celebration">🎉</div>
       <h2>Game Over</h2>
@@ -132,7 +130,13 @@
         <p>Questions Answered: <span id="stat-answered"></span></p>
         <p>League: <span id="stat-league"></span></p>
         <p>Time Taken: <span id="stat-taken"></span>s</p>
-        <p>Time Remaining: <span id="stat-remaining"></span>s</p>
+        <p>Avg Time/Q: <span id="stat-average"></span>s</p>
+      </div>
+      <div id="stats-extra">
+        <h3>Fastest Answers</h3>
+        <ol id="fastest"></ol>
+        <h3>Slowest Answers</h3>
+        <ol id="slowest"></ol>
       </div>
       <div id="recommendations">
         <h3>Recommendations:</h3>
@@ -166,7 +170,7 @@
     document.getElementById('leave-btn').addEventListener('click', () => {
       clearInterval(timerInterval);
       showScreen('start');
-      document.getElementById('timer').classList.remove('warning');
+      timerElem.classList.remove('warning');
     });
     document.getElementById('retry-btn').addEventListener('click', () => showScreen('start'));
 
@@ -178,8 +182,8 @@
     modeQuick.addEventListener('change', () => quickSelect.disabled = modeFull.checked);
 
     // Variables
-    let problems = [], iconMap = [], wrong = [];
-    let startTime, timeLeft, hearts, score, current, timerInterval, warningPlayed;
+    let problems = [], iconMap = [], wrong = [], answerTimes = [];
+    let startTime, questionStart, timeLeft, hearts, score, current, timerInterval, warningPlayed;
     const timerElem = document.getElementById('timer');
     const hurrays = ['sounds/hurray1.mp3', 'sounds/hurray2.mp3', 'sounds/hurray3.mp3', 'sounds/hurray4.mp3'];
     const maxHearts = () => Math.ceil(problems.length / 16);
@@ -188,16 +192,10 @@
     function generateProblems() {
       problems = [];
       if (modeFull.checked) {
-        for (let i = 2; i <= 9; i++) {
-          for (let j = 2; j <= 9; j++) {
-            problems.push({ q: `${i} × ${j}`, a: i * j });
-          }
-        }
+        for (let i = 2; i <= 9; i++) for (let j = 2; j <= 9; j++) problems.push({ q: `${i} × ${j}`, a: i * j });
       } else {
-        const row = parseInt(quickSelect.value);
-        for (let j = 2; j <= 9; j++) {
-          problems.push({ q: `${row} × ${j}`, a: row * j });
-        }
+        const r = parseInt(quickSelect.value);
+        for (let j = 2; j <= 9; j++) problems.push({ q: `${r} × ${j}`, a: r * j });
       }
       problems.sort(() => Math.random() - 0.5);
     }
@@ -216,6 +214,7 @@
       document.getElementById('question').textContent = problems[current].q;
       document.getElementById('answer').value = '';
       document.getElementById('answer').focus();
+      questionStart = Date.now();
     }
 
     // End screen
@@ -227,14 +226,18 @@
       document.getElementById('stat-answered').textContent = stats.answered;
       document.getElementById('stat-league').textContent = stats.league;
       document.getElementById('stat-taken').textContent = stats.taken;
-      document.getElementById('stat-remaining').textContent = stats.remaining;
-      const recList = document.getElementById('rec-list');
-      recList.innerHTML = '';
-      stats.wrongs.forEach(w => {
-        const li = document.createElement('li');
-        li.textContent = `${w.q} = ${w.a}`;
-        recList.appendChild(li);
-      });
+      document.getElementById('stat-average').textContent = Math.round(100 * stats.taken / stats.answered) / 100;
+      // fastest & slowest
+      const fastest = answerTimes.slice().sort((a,b)=>a.time-b.time).slice(0,5);
+      const slowest = answerTimes.slice().sort((a,b)=>b.time-a.time).slice(0,5);
+      const fList = document.getElementById('fastest'), sList = document.getElementById('slowest');
+      fList.innerHTML = '';
+      fastest.forEach(item => { const li=document.createElement('li'); li.textContent=`${item.q}: ${item.time.toFixed(2)}s`; fList.appendChild(li); });
+      sList.innerHTML = '';
+      slowest.forEach(item => { const li=document.createElement('li'); li.textContent=`${item.q}: ${item.time.toFixed(2)}s`; sList.appendChild(li); });
+      // recommendations
+      const recList = document.getElementById('rec-list'); recList.innerHTML = '';
+      stats.wrongs.forEach(w => { const li = document.createElement('li'); li.textContent = `${w.q} = ${w.a}`; recList.appendChild(li); });
     }
 
     function finish() {
@@ -243,27 +246,19 @@
       const remaining = timeLeft;
       let bonus = remaining > 0 ? 5000 + 50 * remaining : 0;
       score += bonus;
-      // Running animals
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
       iconMap.forEach(icon => {
-        const runEl = document.createElement('span');
-        runEl.classList.add('run');
-        runEl.textContent = icon;
-        runEl.style.setProperty('--run-x', (Math.random() * 400 - 200) + 'px');
-        runEl.style.setProperty('--run-y', (Math.random() * 200 - 100) + 'px');
+        const runEl = document.createElement('span'); runEl.classList.add('run'); runEl.textContent = icon;
+        runEl.style.left = Math.random() * vw + 'px'; runEl.style.top = Math.random() * vh + 'px';
+        runEl.style.setProperty('--run-x', (Math.random() * vw - vw/2) + 'px');
+        runEl.style.setProperty('--run-y', (Math.random() * vh - vh/2) + 'px');
         document.body.appendChild(runEl);
       });
       setTimeout(() => document.querySelectorAll('.run').forEach(el => el.remove()), 3000);
       hurrays.forEach(src => new Audio(src).play());
       document.getElementById('applause-sound').play();
-      showEnd({
-        score,
-        hearts,
-        answered: current,
-        league: document.getElementById('league-select').selectedOptions[0].text,
-        taken,
-        remaining,
-        wrongs: wrong
-      }, true);
+      showEnd({ score, hearts, answered: current, league: document.getElementById('league-select').selectedOptions[0].text, taken, remaining, wrongs: wrong }, true);
     }
 
     function lose() {
@@ -271,103 +266,47 @@
       const taken = Math.floor((Date.now() - startTime) / 1000);
       const remaining = timeLeft;
       document.getElementById('loss-sound').play();
-      showEnd({
-        score,
-        hearts: 0,
-        answered: current,
-        league: document.getElementById('league-select').selectedOptions[0].text,
-        taken,
-        remaining,
-        wrongs: wrong
-      }, false);
+      showEnd({ score, hearts: 0, answered: current, league: document.getElementById('league-select').selectedOptions[0].text, taken, remaining, wrongs: wrong }, false);
     }
 
-    // Start game
     function startGame() {
-      generateProblems();
-      wrong = [];
+      generateProblems(); wrong = []; answerTimes = [];
       const secPerQ = parseInt(document.getElementById('league-select').value);
-      timeLeft = problems.length * secPerQ;
-      hearts = maxHearts();
-      score = 0;
-      current = 0;
-      warningPlayed = false;
-      startTime = Date.now();
-
-      iconMap = [];
+      timeLeft = problems.length * secPerQ; hearts = maxHearts(); score = 0; current = 0; warningPlayed = false; startTime = Date.now(); iconMap = [];
       document.getElementById('animals').innerHTML = '';
-      problems.forEach((p, idx) => {
-        const icon = ['🐥','🐸','🐼','🦊','🦁','🐵','🦄','🦉','🐧','🐨','🦔','🐯','🐮','🐬','🐙','🐶','🐱'][Math.floor(Math.random() * 17)];
-        iconMap.push(icon);
-        const span = document.createElement('span');
-        span.className = 'cage';
-        span.id = 'cage-' + idx;
-        span.textContent = icon;
+      problems.forEach((p, idx) => { const icon = ['🐥','🐸','🐼','🦊','🦁','🐵','🦄','🦉','🐧','🐨','🦔','🐯','🐮','🐬','🐙','🐶','🐱'][Math.floor(Math.random()*17)]; iconMap.push(icon);
+        const span = document.createElement('span'); span.className = 'cage'; span.id = 'cage-'+idx; span.textContent = icon;
         document.getElementById('animals').appendChild(span);
       });
-
-      showScreen('game');
-      document.getElementById('celebration').style.display = 'none';
-      timerElem.classList.remove('warning');
-      updateDisplays();
-      showQuestion();
-
-      document.getElementById('submit').disabled = false;
-      document.getElementById('answer').disabled = false;
-
+      showScreen('game'); document.getElementById('celebration').style.display='none'; timerElem.classList.remove('warning'); updateDisplays(); showQuestion(); document.getElementById('submit').disabled=false; document.getElementById('answer').disabled=false;
       clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 15 && !warningPlayed) {
-          timerElem.classList.add('warning');
-          document.getElementById('warning-sound').play();
-          warningPlayed = true;
-        }
-        updateDisplays();
-        if (timeLeft <= 0) finish();
-      }, 1000);
+      timerInterval = setInterval(() => { timeLeft--; if(timeLeft<=15&&!warningPlayed){ timerElem.classList.add('warning'); document.getElementById('warning-sound').play(); warningPlayed=true;} updateDisplays(); if(timeLeft<=0) finish(); },1000);
     }
 
     document.getElementById('start-btn').addEventListener('click', startGame);
     document.getElementById('submit').addEventListener('click', () => {
-      const userAns = parseInt(document.getElementById('answer').value);
-      if (isNaN(userAns)) return;
-      const p = problems[current];
-      const cage = document.getElementById('cage-' + current);
-      const icon = iconMap[current];
+      const answerTime = (Date.now() - questionStart) / 1000;
+      answerTimes.push({ q: problems[current].q, time: answerTime });
+      const userAns = parseInt(document.getElementById('answer').value); if (isNaN(userAns)) return;
+      const p = problems[current], cage = document.getElementById('cage-'+current), icon = iconMap[current];
       if (userAns === p.a) {
-        score += 10;
-        document.getElementById('unlock-sound').play();
-        cage.classList.add('unlock');
-        const flyIcon = document.createElement('span');
-        flyIcon.textContent = icon;
-        flyIcon.className = 'fly';
-        const rect = cage.getBoundingClientRect();
-        flyIcon.style.left = rect.left + 'px';
-        flyIcon.style.top = rect.top + 'px';
-        flyIcon.style.setProperty('--fly-x', (Math.random() * 200 - 100) + 'px');
-        document.body.appendChild(flyIcon);
-        new Audio(hurrays[Math.floor(Math.random() * hurrays.length)]).play();
+        score += 10; document.getElementById('unlock-sound').play(); cage.classList.add('unlock');
+        const flyIcon = document.createElement('span'); flyIcon.textContent = icon; flyIcon.className='fly';
+        const rect = cage.getBoundingClientRect(); flyIcon.style.left = rect.left + 'px'; flyIcon.style.top = rect.top + 'px'; flyIcon.style.setProperty('--fly-x', (Math.random()*200-100) + 'px'); document.body.appendChild(flyIcon);
+        new Audio(hurrays[Math.floor(Math.random()*hurrays.length)]).play();
       } else {
-        score -= 30;
-        hearts--;
-        wrong.push(p);
-        document.getElementById('unlock-sound').play();
-        cage.classList.add('unlock');
+        score -= 30; hearts--; wrong.push(p); document.getElementById('unlock-sound').play(); cage.classList.add('unlock');
       }
-      current++;
-      updateDisplays();
-      if (hearts <= 0) lose();
-      else showQuestion();
+      current++; updateDisplays(); if (hearts <= 0) lose(); else showQuestion();
     });
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        if (screens.start.style.display !== 'none') startGame();
-        else if (screens.game.style.display !== 'none') document.getElementById('submit').click();
-      }
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') { if (screens.start.style.display !== 'none') startGame(); else if (screens.game.style.display !== 'none') document.getElementById('submit').click(); }});
   </script>
 </body>
+<footer>
+    <center>
+    <a href='license.html'>Credits</a>
+    </center>
+</footer>
 </html>
 
